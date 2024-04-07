@@ -1,10 +1,19 @@
 import React, { useRef, useState } from "react";
 import Header from "./Header";
 import { validateForm } from "../utils/validate";
-import { createUserWithEmailAndPassword,signInWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
 import { auth } from "../utils/firebase";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addUser } from "../utils/userSlice";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isSigninForm, setIsSigninForm] = useState(true);
   const toggleSigninForm = () => {
     setIsSigninForm(!isSigninForm);
@@ -35,12 +44,37 @@ const Login = () => {
     if (!isSigninForm) {
       //Sign up
       console.log("Sign up");
-      createUserWithEmailAndPassword(auth, emailValue, passwordValue)
+      createUserWithEmailAndPassword(
+        auth, emailValue, passwordValue
+      )
         .then((userCredential) => {
           // Signed up
           const user = userCredential.user;
-          // ...
           console.log(user);
+          updateProfile(user, {
+            displayName: fullNameValue,
+            photoURL:
+              "https://occ-0-4857-2164.1.nflxso.net/dnm/api/v6/vN7bi_My87NPKvsBoib006Llxzg/AAAABTZ2zlLdBVC05fsd2YQAR43J6vB1NAUBOOrxt7oaFATxMhtdzlNZ846H3D8TZzooe2-FT853YVYs8p001KVFYopWi4D4NXM.png?r=229",
+          })
+            .then(() => {
+              // Profile updated!
+              navigate("/browse");
+              const { uid, email, displayName, photoURL } = auth.currentUser;
+              dispatch(
+                addUser({
+                  uid: uid,
+                  email: email,
+                  displayName: displayName,
+                  photoURL: photoURL,
+                })
+              );
+             
+            })
+            .catch((error) => {
+              // An error occurred
+              // ...
+              setErrMsg(error.message);
+            });
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -55,7 +89,27 @@ const Login = () => {
           // Signed in
           const user = userCredential.user;
           // ...
-          console.log(user+" signed in");
+          console.log(user + " signed in");
+          updateProfile(user, {
+            displayName: fullNameValue,
+            photoURL:
+              "https://avatars.githubusercontent.com/u/114848675?s=400&u=fa9266f088570d5895a91a198b5804e1debc9b1b&v=4",
+          })
+            .then(() => {
+              // Profile updated!
+              navigate("/browse");
+              const { uid, email, displayName, photoURL } = auth.currentUser;
+              dispatch(
+                addUser({
+                  uid: uid,
+                  email: email,
+                  displayName: displayName,
+                  photoURL: photoURL,
+                })
+              );
+             
+            })
+          
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -69,9 +123,9 @@ const Login = () => {
     <div>
       <Header />
       <div className="absolute">
-        <img
+        <img className="no-repeat"
           src="https://assets.nflxext.com/ffe/siteui/vlv3/7ca5b7c7-20aa-42a8-a278-f801b0d65fa1/fb548c0a-8582-43c5-9fba-cd98bf27452f/IN-en-20240326-popsignuptwoweeks-perspective_alpha_website_large.jpg"
-          alt="backgroundimg"
+          alt="background-img"
         />
       </div>
       <form
