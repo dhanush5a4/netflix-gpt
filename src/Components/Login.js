@@ -58,7 +58,6 @@ const Login = () => {
           })
             .then(() => {
               // Profile updated!
-              navigate("/browse");
               const { uid, email, displayName, photoURL } = auth.currentUser;
               dispatch(
                 addUser({
@@ -68,7 +67,6 @@ const Login = () => {
                   photoURL: photoURL,
                 })
               );
-             
             })
             .catch((error) => {
               // An error occurred
@@ -90,25 +88,6 @@ const Login = () => {
           const user = userCredential.user;
           // ...
           console.log(user + " signed in");
-          updateProfile(user, {
-            displayName: fullNameValue,
-            photoURL:
-              "https://avatars.githubusercontent.com/u/114848675?s=400&u=fa9266f088570d5895a91a198b5804e1debc9b1b&v=4",
-          })
-            .then(() => {
-              // Profile updated!
-              navigate("/browse");
-              const { uid, email, displayName, photoURL } = auth.currentUser;
-              dispatch(
-                addUser({
-                  uid: uid,
-                  email: email,
-                  displayName: displayName,
-                  photoURL: photoURL,
-                })
-              );
-             
-            })
           
         })
         .catch((error) => {

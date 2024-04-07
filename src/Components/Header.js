@@ -2,8 +2,13 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../utils/firebase";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
+import { addUser, removeUser } from "../utils/userSlice";
+import { useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+
 const Header = () => {
+  const dispatch=useDispatch();
   const user = useSelector((store) => store.user);
   const navigate = useNavigate();
   const handleSignout = () => {
@@ -17,6 +22,28 @@ const Header = () => {
         navigate("/error");
       });
   };
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/auth.user
+        const { uid, email, displayName, photoURL } = user;
+        dispatch(
+          addUser({
+            uid: uid,
+            email: email,
+            displayName: displayName,
+            photoURL: photoURL,
+          })
+        );
+        navigate('/browse')
+      } else {
+        // User is signed out
+        dispatch(removeUser());
+        navigate('/')
+      }
+    });
+  }, []);
   return (
     <div className="py-10 top-0 left-0 right-0 mx-32 absolute z-30 flex justify-between">
       <div>
