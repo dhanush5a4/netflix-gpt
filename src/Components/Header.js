@@ -2,13 +2,13 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../utils/firebase";
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { addUser, removeUser } from "../utils/userSlice";
 import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 
 const Header = () => {
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
   const navigate = useNavigate();
   const handleSignout = () => {
@@ -23,7 +23,7 @@ const Header = () => {
       });
   };
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user
@@ -36,13 +36,15 @@ const Header = () => {
             photoURL: photoURL,
           })
         );
-        navigate('/browse')
+        navigate("/browse");
       } else {
         // User is signed out
         dispatch(removeUser());
-        navigate('/')
+        navigate("/");
       }
     });
+    //unsubscribing when component is unmounted
+    return () => unsubscribe();
   }, []);
   return (
     <div className="py-10 top-0 left-0 right-0 mx-32 absolute z-30 flex justify-between">
@@ -55,8 +57,15 @@ const Header = () => {
       </div>
       {user && (
         <div className="flex items-center mx-4 ">
-          <img alt="logo-profile" className="w-12 h-12  rounded-lg mr-7" src={user?.photoURL} />
-          <p onClick={handleSignout} className=" ml-2 cursor-pointer text-red-700 text-lg font-bold font-sans">
+          <img
+            alt="logo-profile"
+            className="w-12 h-12  rounded-lg mr-7"
+            src={user?.photoURL}
+          />
+          <p
+            onClick={handleSignout}
+            className=" ml-2 cursor-pointer text-red-700 text-lg font-bold font-sans"
+          >
             (Sign out)
           </p>
         </div>
