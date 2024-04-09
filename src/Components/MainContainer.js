@@ -6,8 +6,9 @@ import MovieTrailer from './MovieTrailer';
 const MainContainer = () => {
   const movies = useSelector((store) => store.movies?.movies);
   if (!movies) return;
-  // console.log("IN title..");
-  const mainMovie = movies[0];
+  console.log("IN title..");
+  console.log(movies);
+  const mainMovie = movies[3];
   console.log(mainMovie);
   const {id,title,overview}=mainMovie;
 
